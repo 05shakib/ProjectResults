@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js'; // Correct way to import for React app
 
 // Supabase Configuration (These will be set as Environment Variables in Vercel)
+// These variables are injected by Vercel during the build process.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 let supabase = null; // Will be initialized once
 
-function App() {
+// Changed to directly export the function
+export default function App() { // This function is effectively your Results component
     const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'results'
     const [supabaseReady, setSupabaseReady] = useState(false);
     const [supabaseError, setSupabaseError] = useState(null);
 
     useEffect(() => {
+        // Log environment variables for debugging
+        console.log("Vercel Environment Variables Check:");
+        console.log("NEXT_PUBLIC_SUPABASE_URL:", supabaseUrl);
+        console.log("NEXT_PUBLIC_SUPABASE_ANON_KEY:", supabaseAnonKey ? "****** (present)" : "MISSING"); // Mask key for security
+
         // Initialize Supabase only once when URL and Key are available
         if (!supabase && supabaseUrl && supabaseAnonKey) {
             try {
@@ -39,20 +46,27 @@ function App() {
             <div className="grid md:grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
                     <h3 className="text-2xl font-semibold text-blue-700 mb-3">About Me</h3>
+                    <p className="text-gray-600 mb-4">
+                        As a 4th-year BBA Marketing student, I bring a strong analytical foundation, honed through my science background, to understanding market dynamics. My passion lies at the intersection of technology and data, driving effective marketing strategies and solutions.
+                    </p>
+                    <p className="text-gray-600 mb-4">
+                        I am proficient in key marketing analytics and presentation tools, including Microsoft Office Suite (Excel, PowerPoint, Word, Access) and Canva. Furthermore, I possess primary to intermediary knowledge and skills in Python and R, which I'm keen to leverage for data manipulation, analysis, and visualization.
+                    </p>
                     <p className="text-gray-600">
-                        I'm passionate about web development and creating useful applications.
-                        I enjoy learning new technologies and solving problems through code.
-                        In my free time, I love exploring new frameworks and contributing to open-source projects.
+                        I pride myself on being a self-starter and a quick learner, capable of taking initiative on individual projects while also contributing effectively within a responsible group environment. I'm actively seeking opportunities to apply my data-driven marketing insights and analytical skills in dynamic roles that leverage digital marketing, business intelligence, and advanced data tools to achieve strategic goals.
                     </p>
                 </div>
                 <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <h3 className="text-2xl font-semibold text-purple-700 mb-3">My Skills</h3>
+                    <h3 className="text-2xl font-semibold text-purple-700 mb-3">Top Skills</h3>
                     <ul className="list-disc list-inside text-gray-600">
-                        <li>React.js & JavaScript</li>
-                        <li>HTML5 & CSS3 (Tailwind CSS)</li>
-                        <li>Supabase (PostgreSQL, APIs)</li>
-                        <li>Git & Vercel Deployment</li>
-                        <li>Problem Solving & Debugging</li>
+                        <li>Sales Management</li>
+                        <li>Business Analysis</li>
+                        <li>Business Mathematics</li>
+                        <li>Competitive Analysis</li>
+                        <li>Cost Management</li>
+                        <li>Python & R (Data Manipulation, Analysis, Visualization)</li>
+                        <li>Microsoft Office Suite (Excel, PowerPoint, Word, Access)</li>
+                        <li>Canva</li>
                     </ul>
                 </div>
             </div>
@@ -221,188 +235,57 @@ function App() {
         }
 
         return (
-            <div className="p-6 bg-gradient-to-br from-green-100 to-teal-100 rounded-lg shadow-xl animate-fade-in">
-                <h2 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">Student Results & Analysis</h2>
-                <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-                    <p className="text-sm text-gray-600 mb-4">
-                        <span className="font-semibold">Note:</span> This app connects to your Supabase database.
-                        Ensure your `student_results` table is set up and populated.
-                    </p>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                        <div>
-                            <label htmlFor="studentId" className="block text-gray-700 text-sm font-bold mb-2">
-                                Student ID (e.g., S001)
-                            </label>
-                            <input
-                                type="text"
-                                id="studentId"
-                                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={studentIdInput}
-                                onChange={(e) => setStudentIdInput(e.target.value)}
-                                placeholder="Enter Student ID"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="courseCode" className="block text-gray-700 text-sm font-bold mb-2">
-                                Course Code (e.g., 101)
-                            </label>
-                            <input
-                                type="text"
-                                id="courseCode"
-                                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-green-500"
-                                value={courseCodeInput}
-                                onChange={(e) => setCourseCodeInput(e.target.value)}
-                                placeholder="Enter Course Code"
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="semester" className="block text-gray-700 text-sm font-bold mb-2">
-                                Semester
-                            </label>
-                            <select
-                                id="semester"
-                                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                value={semesterInput}
-                                onChange={(e) => setSemesterInput(e.target.value)}
-                            >
-                                <option value="">Select Semester</option>
-                                {semesters.map(sem => (
-                                    <option key={sem} value={sem}>{sem}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label htmlFor="resultType" className="block text-gray-700 text-sm font-bold mb-2">
-                                Result Type
-                            </label>
-                            <select
-                                id="resultType"
-                                className="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                value={resultTypeInput}
-                                onChange={(e) => setResultTypeInput(e.target.value)}
-                            >
-                                <option value="">Select Type</option>
-                                {resultTypes.map(type => (
-                                    <option key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <button
-                        onClick={handleSearch}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
-                        disabled={loading}
-                    >
-                        {loading ? 'Searching...' : 'Search Results'}
-                    </button>
-                    {error && (
-                        <p className="text-red-500 text-center mt-4 p-2 bg-red-100 border border-red-400 rounded-lg">{error}</p>
-                    )}
-                    {message && !error && (
-                        <p className="text-green-600 text-center mt-4 p-2 bg-green-100 border border-green-400 rounded-lg">{message}</p>
-                    )}
-                </div>
+            <div className="min-h-screen bg-gray-50 font-inter p-4 sm:p-6 flex flex-col items-center">
+                {/* Tailwind CSS CDN */}
+                <script src="https://cdn.tailwindcss.com"></script>
+                {/* Google Font - Inter */}
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
 
-                {results.length > 0 && (
-                    <div className="bg-white p-6 rounded-lg shadow-md mt-6 animate-fade-in-up">
-                        <h3 className="text-2xl font-semibold text-gray-800 mb-4">Search Results:</h3>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full bg-white rounded-lg overflow-hidden shadow-inner">
-                                <thead className="bg-gray-200">
-                                    <tr>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider rounded-tl-lg">Student ID</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Student Name</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Batch</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Semester</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Result Type</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Course Code</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Course Name</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Grade</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Hall</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider rounded-tr-lg">Semester GPA</th>
-                                        <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Analysis</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {results.map((result, index) => (
-                                        <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition-colors duration-200`}>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.studentId}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.studentName}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.batch}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.semester}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.resultType}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.courseCode}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.courseName}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800 font-bold">{result.grade}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.hall}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-800">{result.semesterGPA}</td>
-                                            <td className="py-3 px-4 border-b border-gray-200 text-gray-700 text-sm">{result.analysis}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                )}
+                <style>
+                    {`
+                    body {
+                        font-family: 'Inter', sans-serif;
+                    }
+                    .animate-fade-in {
+                        animation: fadeIn 0.8s ease-out forwards;
+                    }
+                    .animate-fade-in-up {
+                        animation: fadeInUp 0.8s ease-out forwards;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    @keyframes fadeInUp {
+                        from { opacity: 0; transform: translateY(20px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    `}
+                </style>
+
+                <header className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md mb-6 flex justify-center space-x-4">
+                    <button
+                        onClick={() => setCurrentPage('home')}
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                            currentPage === 'home' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                        My Personal Page
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage('results')}
+                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                            currentPage === 'results' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                        Student Results Project
+                    </button>
+                </header>
+
+                <main className="w-full max-w-4xl">
+                    {currentPage === 'home' && <HomePage />}
+                    {currentPage === 'results' && <StudentResultsPage supabaseReady={supabaseReady} supabaseError={supabaseError} />}
+                </main>
             </div>
         );
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50 font-inter p-4 sm:p-6 flex flex-col items-center">
-            {/* Tailwind CSS CDN */}
-            <script src="https://cdn.tailwindcss.com"></script>
-            {/* Google Font - Inter */}
-            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-            {/* Removed Supabase JS Client CDN - it's handled by npm/yarn in Vercel build */}
-
-            <style>
-                {`
-                body {
-                    font-family: 'Inter', sans-serif;
-                }
-                .animate-fade-in {
-                    animation: fadeIn 0.8s ease-out forwards;
-                }
-                .animate-fade-in-up {
-                    animation: fadeInUp 0.8s ease-out forwards;
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes fadeInUp {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                `}
-            </style>
-
-            <header className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md mb-6 flex justify-center space-x-4">
-                <button
-                    onClick={() => setCurrentPage('home')}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                        currentPage === 'home' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                >
-                    My Personal Page
-                </button>
-                <button
-                    onClick={() => setCurrentPage('results')}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                        currentPage === 'results' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                >
-                    Student Results Project
-                </button>
-            </header>
-
-            <main className="w-full max-w-4xl">
-                {currentPage === 'home' && <HomePage />}
-                {currentPage === 'results' && <StudentResultsPage supabaseReady={supabaseReady} supabaseError={supabaseError} />}
-            </main>
-        </div>
-    );
-}
-
-export default App;
+    }
