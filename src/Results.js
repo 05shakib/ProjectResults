@@ -288,4 +288,6 @@ function App() {
                 </main>
             </div>
         );
-    };
+    }
+
+export default App; // This line MUST be present at the very end
