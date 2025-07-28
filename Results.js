@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
-// import { createClient } from '@supabase/supabase-js'; // Removed: Will load from CDN
+import { createClient } from '@supabase/supabase-js'; // Correct way to import for React app
 
 // Supabase Configuration (These will be set as Environment Variables in Vercel)
-// For local development, you can hardcode them here temporarily, but REMOVE for production!
-// const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'YOUR_SUPABASE_URL';
-// const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
-
-// Initialize Supabase Client
-// Ensure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set in your Vercel project environment variables.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -19,11 +13,10 @@ function App() {
     const [supabaseError, setSupabaseError] = useState(null);
 
     useEffect(() => {
-        // Initialize Supabase only once after the script has loaded
-        // Check if window.supabase exists (meaning the CDN script has loaded)
-        if (!supabase && supabaseUrl && supabaseAnonKey && window.supabase) {
+        // Initialize Supabase only once when URL and Key are available
+        if (!supabase && supabaseUrl && supabaseAnonKey) {
             try {
-                supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+                supabase = createClient(supabaseUrl, supabaseAnonKey); // Use createClient from the import
                 setSupabaseReady(true);
                 console.log("Supabase client initialized successfully.");
             } catch (error) {
@@ -33,7 +26,7 @@ function App() {
         } else if (!supabaseUrl || !supabaseAnonKey) {
             setSupabaseError("Supabase URL or Anon Key is missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.");
         }
-    }, [supabaseReady]); // Depend on supabaseReady to re-check after script loads
+    }, [supabaseReady, supabaseUrl, supabaseAnonKey]); // Depend on these to re-check if they become available
 
     // Component for the personal homepage
     const HomePage = () => (
@@ -83,7 +76,10 @@ function App() {
         const semesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5'];
         const resultTypes = ['regular', 'improvement'];
 
-        // Function to add sample data (for demonstration) - REMOVE OR COMMENT OUT IN PRODUCTION
+        // Function to add sample data (for demonstration)
+        // IMPORTANT: For production, once your data is imported via CSV,
+        // you should REMOVE or COMMENT OUT this entire addSampleData function
+        // and its useEffect call to prevent unnecessary database writes on every load.
         const addSampleData = async () => {
             if (!supabaseReady || !supabase) {
                 setError("Supabase not ready.");
@@ -358,8 +354,7 @@ function App() {
             <script src="https://cdn.tailwindcss.com"></script>
             {/* Google Font - Inter */}
             <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-            {/* Supabase JS Client CDN */}
-            <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+            {/* Removed Supabase JS Client CDN - it's handled by npm/yarn in Vercel build */}
 
             <style>
                 {`
