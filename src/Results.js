@@ -290,4 +290,4 @@ function App() { // This function is effectively your Results component
         );
     }
 
-export default App; // This line MUST be present at the very end
+export default App;
