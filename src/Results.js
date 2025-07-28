@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } => 'react';
 import { createClient } from '@supabase/supabase-js'; // Correct way to import for React app
 
 // Supabase Configuration (These will be set as Environment Variables in Vercel)
