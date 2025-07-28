@@ -288,4 +288,4 @@ function App() {
                 </main>
             </div>
         );
-    }
+    };
