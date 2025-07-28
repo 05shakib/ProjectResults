@@ -7,7 +7,7 @@
       "config": { "outputDirectory": "build" }
     }
   ],
-  "installCommand": "npm ci",
+  "installCommand": "npm install",
   "buildCommand": "npm run build",
   "routes": [
     { "src": "/static/js/(.*)", "dest": "/static/js/$1" },
