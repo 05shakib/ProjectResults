@@ -1,7 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css'; // ✅ Make sure this file exists
-import App from './Results'; // ✅ Corrected path
+import ReactDOM from 'react-dom/client'; // Use createRoot for React 18
+import App from './Results'; // Import your Results component
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
