@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client'; // Use createRoot for React 18
-import App from './App'; // Import your App component
+import App from './Results'; // Import your Results component (updated path)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
