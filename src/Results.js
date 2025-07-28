@@ -8,8 +8,8 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 let supabase = null; // Will be initialized once
 
-// Changed to directly export the function
-export default function App() { // This function is effectively your Results component
+// Changed back to standard function definition
+function App() { // This function is effectively your Results component
     const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'results'
     const [supabaseReady, setSupabaseReady] = useState(false);
     const [supabaseError, setSupabaseError] = useState(null);
