@@ -282,18 +282,8 @@ function App() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
-            <style jsx global>{`
-                @keyframes fade-in {
-                    from { opacity: 0; }
-                    to { opacity: 1; }
-                }
-                @keyframes fade-in-up {
-                    from { opacity: 0; transform: translateY(20px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
-                .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
-            `}</style>
+            {/* Tailwind CSS CDN and Google Font are included in public/index.html */}
+            {/* Global styles for animations are now in src/index.css */}
 
             <header className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md mb-6 flex justify-center space-x-4">
                 <button
