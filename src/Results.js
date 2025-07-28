@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'; // Correct way to import for React app
 
-// Supabase Configuration
+// Supabase Configuration (These will be set as Environment Variables in Vercel)
+// These variables are injected by Vercel during the build process.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-let supabase = null;
+
+let supabase = null; // Will be initialized once
 
 // HomePage component defined at the top level
 function HomePage() {
@@ -249,7 +251,6 @@ function StudentResultsPage({ supabaseReady, supabaseError }) {
     );
 }
 
-
 // Main App component
 function App() {
     const [currentPage, setCurrentPage] = useState('home');
@@ -277,7 +278,7 @@ function App() {
             setSupabaseError(`Missing Supabase environment variables: ${missingVars.join(', ')}. Please configure them in Vercel.`);
             console.error("Missing Supabase environment variables. Cannot initialize client.");
         }
-    }, [supabaseUrl, supabaseAnonKey]);
+    }, []); // Empty dependency array to run only once
 
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
@@ -321,4 +322,4 @@ function App() {
     );
 }
 
-export default App; // This export is now correctly at the top level
+export default App;
