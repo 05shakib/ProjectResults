@@ -8,9 +8,12 @@
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+    { "src": "/static/js/(.*)", "dest": "/static/js/$1" },
+    { "src": "/static/css/(.*)", "dest": "/static/css/$1" },
+    { "src": "/static/media/(.*)", "dest": "/static/media/$1" },
+    { "src": "/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "/manifest.json", "dest": "/manifest.json" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/.*", "dest": "/index.html" }
   ]
 }
