@@ -1,293 +1,324 @@
-import React, { useState, useEffect } from 'react'; // Corrected: changed '=>' to 'from'
-import { createClient } from '@supabase/supabase-js'; // Correct way to import for React app
+import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-// Supabase Configuration (These will be set as Environment Variables in Vercel)
-// These variables are injected by Vercel during the build process.
+// Supabase Configuration
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+let supabase = null;
 
-let supabase = null; // Will be initialized once
+// HomePage component defined at the top level
+function HomePage() {
+    return (
+        <section className="bg-white p-8 rounded-lg shadow-md text-gray-800 text-center animate-fade-in-up">
+            <h2 className="text-4xl font-extrabold mb-6 text-blue-700">Welcome to My Personal Page!</h2>
+            <p className="text-lg mb-4 leading-relaxed">
+                Hello! I am a 4th-year BBA Marketing student with a passion for understanding consumer behavior and developing innovative strategies. My academic background also includes a solid foundation in science, which has equipped me with strong analytical and problem-solving skills.
+            </p>
+            <p className="text-lg mb-6 leading-relaxed">
+                I am proficient in Microsoft Office Suite, Canva, Python, and R, constantly seeking to expand my technical toolkit to better address complex business challenges.
+            </p>
+            <div className="mt-8">
+                <h3 className="text-2xl font-bold mb-4 text-gray-700">My Top Skills</h3>
+                <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-left mx-auto max-w-2xl">
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Sales Management
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Business Analysis
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Business Mathematics
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Competitive Analysis
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Cost Management
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Python & R
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Microsoft Office Suite
+                    </li>
+                    <li className="flex items-center bg-blue-50 p-3 rounded-lg shadow-sm">
+                        <svg className="w-6 h-6 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                        Canva
+                    </li>
+                </ul>
+            </div>
+        </section>
+    );
+}
 
-// Standard function definition for the main App component (which is Results.js)
+// StudentResultsPage component defined at the top level
+function StudentResultsPage({ supabaseReady, supabaseError }) {
+    const [studentIdInput, setStudentIdInput] = useState('');
+    const [courseCodeInput, setCourseCodeInput] = useState('');
+    const [semesterInput, setSemesterInput] = useState('');
+    const [resultTypeInput, setResultTypeInput] = useState('');
+    const [results, setResults] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+
+    useEffect(() => {
+        if (supabaseReady) {
+            addSampleData();
+        }
+    }, [supabaseReady]);
+
+    const addSampleData = async () => {
+        if (!supabase) {
+            console.error("Supabase client is not initialized.");
+            return;
+        }
+        try {
+            // Check if data already exists to avoid duplication
+            const { count, error: countError } = await supabase
+                .from('student_results')
+                .select('*', { count: 'exact', head: true });
+
+            if (countError) {
+                console.error("Error checking existing data:", countError.message);
+                return;
+            }
+
+            if (count === 0) {
+                const sampleData = [
+                    { student_id: 'S001', student_name: 'Alice Smith', course_code: 'CS101', course_name: 'Intro to Programming', semester: 'Fall 2023', result_type: 'Midterm', score: 85, grade: 'B' },
+                    { student_id: 'S001', student_name: 'Alice Smith', course_code: 'MA101', course_name: 'Calculus I', semester: 'Fall 2023', result_type: 'Final', score: 92, grade: 'A' },
+                    { student_id: 'S002', student_name: 'Bob Johnson', course_code: 'CS101', course_name: 'Intro to Programming', semester: 'Fall 2023', result_type: 'Final', score: 78, grade: 'C' },
+                    { student_id: 'S003', student_name: 'Charlie Brown', course_code: 'PH101', course_name: 'Physics I', semester: 'Spring 2024', result_type: 'Midterm', score: 95, grade: 'A' },
+                    { student_id: 'S001', student_name: 'Alice Smith', course_code: 'CS101', course_name: 'Intro to Programming', semester: 'Fall 2023', result_type: 'Quiz 1', score: 80, grade: 'B' },
+                    { student_id: 'S001', student_name: 'Alice Smith', course_code: 'MA101', course_name: 'Calculus I', semester: 'Fall 2023', result_type: 'Midterm', score: 88, grade: 'B+' }
+                ];
+
+                const { error } = await supabase
+                    .from('student_results')
+                    .insert(sampleData);
+
+                if (error) {
+                    console.error("Error inserting sample data:", error.message);
+                } else {
+                    console.log("Sample data added successfully.");
+                }
+            } else {
+                console.log("Sample data already exists. Skipping insertion.");
+            }
+        } catch (error) {
+            console.error("Supabase operation failed:", error.message);
+        }
+    };
+
+    const fetchResults = async () => {
+        if (!supabaseReady || !supabase) {
+            setMessage('Supabase client not ready. Please check environment variables.');
+            return;
+        }
+
+        setLoading(true);
+        setMessage('');
+        setResults([]);
+
+        try {
+            let query = supabase.from('student_results').select('*');
+
+            if (studentIdInput) {
+                query = query.ilike('student_id', `%${studentIdInput}%`);
+            }
+            if (courseCodeInput) {
+                query = query.ilike('course_code', `%${courseCodeInput}%`);
+            }
+            if (semesterInput) {
+                query = query.ilike('semester', `%${semesterInput}%`);
+            }
+            if (resultTypeInput) {
+                query = query.ilike('result_type', `%${resultTypeInput}%`);
+            }
+
+            const { data, error } = await query;
+
+            if (error) {
+                setMessage(`Error fetching results: ${error.message}`);
+                setResults([]);
+            } else {
+                setResults(data);
+                if (data.length === 0) {
+                    setMessage('No results found for the given criteria.');
+                }
+            }
+        } catch (error) {
+            setMessage(`An unexpected error occurred: ${error.message}`);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <section className="bg-white p-8 rounded-lg shadow-md text-gray-800 animate-fade-in-up">
+            <h2 className="text-4xl font-extrabold mb-6 text-green-700 text-center">Student Results Dashboard</h2>
+
+            {supabaseError && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong className="font-bold">Error:</strong>
+                    <span className="block sm:inline"> {supabaseError}</span>
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <input
+                    type="text"
+                    placeholder="Search by Student ID (e.g., S001)"
+                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={studentIdInput}
+                    onChange={(e) => setStudentIdInput(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Search by Course Code (e.g., CS101)"
+                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={courseCodeInput}
+                    onChange={(e) => setCourseCodeInput(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Search by Semester (e.g., Fall 2023)"
+                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={semesterInput}
+                    onChange={(e) => setSemesterInput(e.target.value)}
+                />
+                <input
+                    type="text"
+                    placeholder="Search by Result Type (e.g., Final)"
+                    className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={resultTypeInput}
+                    onChange={(e) => setResultTypeInput(e.target.value)}
+                />
+            </div>
+
+            <button
+                onClick={fetchResults}
+                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-300 mb-6 shadow-md"
+                disabled={loading}
+            >
+                {loading ? 'Searching...' : 'Search Results'}
+            </button>
+
+            {message && <p className="text-center text-gray-600 mb-4">{message}</p>}
+
+            {results.length > 0 && (
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
+                        <thead>
+                            <tr className="bg-gray-100 border-b border-gray-300">
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Student ID</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Student Name</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Course Code</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Course Name</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Semester</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Result Type</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Score</th>
+                                <th className="py-3 px-4 text-left text-sm font-semibold text-gray-700">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {results.map((result, index) => (
+                                <tr key={index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors duration-150">
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.student_id}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.student_name}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.course_code}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.course_name}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.semester}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.result_type}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.score}</td>
+                                    <td className="py-3 px-4 text-sm text-gray-800">{result.grade}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </section>
+    );
+}
+
+
+// Main App component
 function App() {
-    const [currentPage, setCurrentPage] = useState('home'); // 'home' or 'results'
+    const [currentPage, setCurrentPage] = useState('home');
     const [supabaseReady, setSupabaseReady] = useState(false);
     const [supabaseError, setSupabaseError] = useState(null);
 
     useEffect(() => {
-        // Log environment variables for debugging
         console.log("Vercel Environment Variables Check:");
         console.log("NEXT_PUBLIC_SUPABASE_URL:", supabaseUrl);
-        console.log("NEXT_PUBLIC_SUPABASE_ANON_KEY:", supabaseAnonKey ? "****** (present)" : "MISSING"); // Mask key for security
+        console.log("NEXT_PUBLIC_SUPABASE_ANON_KEY:", supabaseAnonKey ? "****** (present)" : "MISSING");
 
-        // Initialize Supabase only once when URL and Key are available
         if (!supabase && supabaseUrl && supabaseAnonKey) {
             try {
-                supabase = createClient(supabaseUrl, supabaseAnonKey); // Use createClient from the import
+                supabase = createClient(supabaseUrl, supabaseAnonKey);
                 setSupabaseReady(true);
                 console.log("Supabase client initialized successfully.");
-            } catch (error) {
-                console.error("Error initializing Supabase client:", error);
-                setSupabaseError("Failed to initialize Supabase. Please check your environment variables.");
+            } catch (e) {
+                console.error("Failed to initialize Supabase client:", e.message);
+                setSupabaseError(`Failed to connect to Supabase. Ensure environment variables are set correctly: ${e.message}`);
             }
         } else if (!supabaseUrl || !supabaseAnonKey) {
-            setSupabaseError("Supabase URL or Anon Key is missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.");
+            const missingVars = [];
+            if (!supabaseUrl) missingVars.push('NEXT_PUBLIC_SUPABASE_URL');
+            if (!supabaseAnonKey) missingVars.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+            setSupabaseError(`Missing Supabase environment variables: ${missingVars.join(', ')}. Please configure them in Vercel.`);
+            console.error("Missing Supabase environment variables. Cannot initialize client.");
         }
-    }, [supabaseReady, supabaseUrl, supabaseAnonKey]); // Depend on these to re-check if they become available
+    }, [supabaseUrl, supabaseAnonKey]);
 
-    // Component for the personal homepage
-    const HomePage = () => (
-        <div className="p-6 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg shadow-xl animate-fade-in">
-            <h2 className="text-4xl font-extrabold text-gray-800 mb-4 text-center">Welcome to My Personal Page!</h2>
-            <p className="text-lg text-gray-700 leading-relaxed mb-6 text-center">
-                Hello there! I'm excited to share a bit about myself and my projects.
-                This page serves as a central hub for my work.
-            </p>
-            <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <h3 className="text-2xl font-semibold text-blue-700 mb-3">About Me</h3>
-                    <p className="text-gray-600 mb-4">
-                        As a 4th-year BBA Marketing student, I bring a strong analytical foundation, honed through my science background, to understanding market dynamics. My passion lies at the intersection of technology and data, driving effective marketing strategies and solutions.
-                    </p>
-                    <p className="text-gray-600 mb-4">
-                        I am proficient in key marketing analytics and presentation tools, including Microsoft Office Suite (Excel, PowerPoint, Word, Access) and Canva. Furthermore, I possess primary to intermediary knowledge and skills in Python and R, which I'm keen to leverage for data manipulation, analysis, and visualization.
-                    </p>
-                    <p className="text-gray-600">
-                        I pride myself on being a self-starter and a quick learner, capable of taking initiative on individual projects while also contributing effectively within a responsible group environment. I'm actively seeking opportunities to apply my data-driven marketing insights and analytical skills in dynamic roles that leverage digital marketing, business intelligence, and advanced data tools to achieve strategic goals.
-                    </p>
-                </div>
-                <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
-                    <h3 className="text-2xl font-semibold text-purple-700 mb-3">Top Skills</h3>
-                    <ul className="list-disc list-inside text-gray-600">
-                        <li>Sales Management</li>
-                        <li>Business Analysis</li>
-                        <li>Business Mathematics</li>
-                        <li>Competitive Analysis</li>
-                        <li>Cost Management</li>
-                        <li>Python & R (Data Manipulation, Analysis, Visualization)</li>
-                        <li>Microsoft Office Suite (Excel, PowerPoint, Word, Access)</li>
-                        <li>Canva</li>
-                    </ul>
-                </div>
-            </div>
-            <p className="text-center text-gray-600 mt-8 text-sm">
-                Feel free to explore my projects, especially the "Student Results" section!
-            </p>
+    return (
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+            <style jsx global>{`
+                @keyframes fade-in {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes fade-in-up {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in { animation: fade-in 0.6s ease-out forwards; }
+                .animate-fade-in-up { animation: fade-in-up 0.6s ease-out forwards; }
+            `}</style>
+
+            <header className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md mb-6 flex justify-center space-x-4">
+                <button
+                    onClick={() => setCurrentPage('home')}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                        currentPage === 'home' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                    My Personal Page
+                </button>
+                <button
+                    onClick={() => setCurrentPage('results')}
+                    className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                        currentPage === 'results' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                    Student Results Project
+                </button>
+            </header>
+
+            <main className="w-full max-w-4xl">
+                {currentPage === 'home' && <HomePage />}
+                {currentPage === 'results' && <StudentResultsPage supabaseReady={supabaseReady} supabaseError={supabaseError} />}
+            </main>
         </div>
     );
+}
 
-    // Component for the student results project page
-    const StudentResultsPage = ({ supabaseReady, supabaseError }) => {
-        const [studentIdInput, setStudentIdInput] = useState('');
-        const [courseCodeInput, setCourseCodeInput] = useState('');
-        const [semesterInput, setSemesterInput] = useState('');
-        const [resultTypeInput, setResultTypeInput] = useState('');
-        const [results, setResults] = useState([]);
-        const [loading, setLoading] = useState(false);
-        const [error, setError] = useState(null);
-        const [message, setMessage] = useState('');
-
-        const semesters = ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4', 'Semester 5'];
-        const resultTypes = ['regular', 'improvement'];
-
-        // Function to add sample data (for demonstration)
-        // IMPORTANT: For production, once your data is imported via CSV,
-        // you should REMOVE or COMMENT OUT this entire addSampleData function
-        // and its useEffect call to prevent unnecessary database writes on every load.
-        const addSampleData = async () => {
-            if (!supabaseReady || !supabase) {
-                setError("Supabase not ready.");
-                return;
-            }
-            setLoading(true);
-            setError(null);
-            setMessage('');
-            try {
-                const sampleData = [
-                    { studentId: 'S001', studentName: 'Alice Smith', batch: 'Batch2023', semester: 'Semester 1', resultType: 'regular', courseCode: '101', courseName: 'Intro to Programming', grade: 'A', analysis: 'Excellent understanding of algorithms.', hall: 'Hall A', semesterGPA: '3.8' },
-                    { studentId: 'S001', studentName: 'Alice Smith', batch: 'Batch2023', semester: 'Semester 1', resultType: 'regular', courseCode: '102', courseName: 'Data Structures', grade: 'B+', analysis: 'Good grasp of concepts.', hall: 'Hall A', semesterGPA: '3.8' },
-                    { studentId: 'S002', studentName: 'Bob Johnson', batch: 'Batch2023', semester: 'Semester 1', resultType: 'regular', courseCode: '101', courseName: 'Intro to Programming', grade: 'B', analysis: 'Needs more coding practice.', hall: 'Hall B', semesterGPA: '3.2' },
-                    { studentId: 'S003', studentName: 'Charlie Brown', batch: 'Batch2022', semester: 'Semester 3', resultType: 'improvement', courseCode: '101', courseName: 'Intro to Programming', grade: 'B+', analysis: 'Much better grasp of concepts.', hall: 'Hall C', semesterGPA: '2.9' },
-                    { studentId: 'S003', studentName: 'Charlie Brown', batch: 'Batch2022', semester: 'Semester 3', resultType: 'improvement', courseCode: '102', courseName: 'Data Structures', grade: 'A-', analysis: 'Strong problem-solving.', hall: 'Hall C', semesterGPA: '2.9' },
-                    { studentId: 'S004', studentName: 'Diana Prince', batch: 'Batch2023', semester: 'Semester 2', resultType: 'regular', courseCode: '201', courseName: 'Algorithms', grade: 'A+', analysis: 'Exceptional problem-solving skills.', hall: 'Hall D', semesterGPA: '3.9' },
-                ];
-
-                // Check if data already exists to prevent duplicates on every load
-                const { data: existingData, error: checkError } = await supabase
-                    .from('student_results')
-                    .select('studentId')
-                    .eq('studentId', 'S001')
-                    .limit(1);
-
-                if (checkError) throw checkError;
-
-                if (existingData.length === 0) {
-                    const { error: insertError } = await supabase
-                        .from('student_results')
-                        .insert(sampleData);
-
-                    if (insertError) throw insertError;
-                    setMessage('Sample data added successfully to the "student_results" table!');
-                } else {
-                    setMessage('Sample data already exists in "student_results" table. Skipping insertion.');
-                }
-            } catch (e) {
-                console.error("Error adding sample data: ", e);
-                setError(`Failed to add sample data: ${e.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        // Add sample data when component mounts and Supabase is ready
-        useEffect(() => {
-            if (supabaseReady && supabase) {
-                addSampleData();
-            }
-        }, [supabaseReady]); // Depend on supabaseReady
-
-        const handleSearch = async () => {
-            if (!supabaseReady || !supabase) {
-                setError("Supabase not ready.");
-                return;
-            }
-
-            setLoading(true);
-            setError(null);
-            setResults([]);
-            setMessage('');
-
-            try {
-                let queryBuilder = supabase.from('student_results').select('*');
-
-                let hasFilter = false;
-
-                if (studentIdInput) {
-                    queryBuilder = queryBuilder.eq('studentId', studentIdInput.toUpperCase());
-                    hasFilter = true;
-                }
-                if (courseCodeInput) {
-                    queryBuilder = queryBuilder.eq('courseCode', courseCodeInput.toUpperCase());
-                    hasFilter = true;
-                }
-                if (semesterInput) {
-                    queryBuilder = queryBuilder.eq('semester', semesterInput);
-                    hasFilter = true;
-                }
-                if (resultTypeInput) {
-                    queryBuilder = queryBuilder.eq('resultType', resultTypeInput);
-                    hasFilter = true;
-                }
-
-                if (!hasFilter) {
-                    setError("Please enter at least one search criterion (Student ID, Course Code, Semester, or Result Type).");
-                    setLoading(false);
-                    return;
-                }
-
-                const { data, error: fetchError } = await queryBuilder;
-
-                if (fetchError) throw fetchError;
-
-                const fetchedResults = data || [];
-
-                // Sort results for consistent display (e.g., by studentId, then semester, then courseCode)
-                fetchedResults.sort((a, b) => {
-                    if (a.studentId !== b.studentId) return a.studentId.localeCompare(b.studentId);
-                    const semAIndex = semesters.indexOf(a.semester);
-                    const semBIndex = semesters.indexOf(b.semester);
-                    if (semAIndex !== semBIndex) return semAIndex - semBIndex;
-                    return a.courseCode.localeCompare(b.courseCode);
-                });
-
-                if (fetchedResults.length > 0) {
-                    setResults(fetchedResults);
-                    setMessage('Results found!');
-                } else {
-                    setMessage('No results found for the given criteria.');
-                }
-
-            } catch (e) {
-                console.error("Error fetching documents: ", e);
-                setError(`Failed to fetch results: ${e.message}`);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (supabaseError) {
-            return (
-                <div className="text-center p-6 bg-red-100 text-red-700 rounded-lg shadow-md">
-                    <p className="text-xl font-semibold mb-2">Supabase Error:</p>
-                    <p>{supabaseError}</p>
-                    <p className="text-sm mt-4">Please ensure your Supabase URL and Anon Key are correctly set as environment variables.</p>
-                </div>
-            );
-        }
-
-        if (!supabaseReady) {
-            return (
-                <div className="text-center p-6 bg-blue-100 text-blue-700 rounded-lg shadow-md animate-pulse">
-                    <p className="text-xl font-semibold">Initializing Supabase...</p>
-                    <p className="text-sm mt-2">This might take a moment.</p>
-                </div>
-            );
-        }
-
-        return (
-            <div className="min-h-screen bg-gray-50 font-inter p-4 sm:p-6 flex flex-col items-center">
-                {/* Tailwind CSS CDN */}
-                <script src="https://cdn.tailwindcss.com"></script>
-                {/* Google Font - Inter */}
-                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-
-                <style>
-                    {`
-                    body {
-                        font-family: 'Inter', sans-serif;
-                    }
-                    .animate-fade-in {
-                        animation: fadeIn 0.8s ease-out forwards;
-                    }
-                    .animate-fade-in-up {
-                        animation: fadeInUp 0.8s ease-out forwards;
-                    }
-                    @keyframes fadeIn {
-                        from { opacity: 0; }
-                        to { opacity: 1; }
-                    }
-                    @keyframes fadeInUp {
-                        from { opacity: 0; transform: translateY(20px); }
-                        to { opacity: 1; transform: translateY(0); }
-                    }
-                    `}
-                </style>
-
-                <header className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-md mb-6 flex justify-center space-x-4">
-                    <button
-                        onClick={() => setCurrentPage('home')}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                            currentPage === 'home' ? 'bg-blue-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                    >
-                        My Personal Page
-                    </button>
-                    <button
-                        onClick={() => setCurrentPage('results')}
-                        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
-                            currentPage === 'results' ? 'bg-green-600 text-white shadow-lg' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                    >
-                        Student Results Project
-                    </button>
-                </header>
-
-                <main className="w-full max-w-4xl">
-                    {currentPage === 'home' && <HomePage />}
-                    {currentPage === 'results' && <StudentResultsPage supabaseReady={supabaseReady} supabaseError={supabaseError} />}
-                </main>
-            </div>
-        );
-    }
-
-export default App; // This line MUST be present at the very end
+export default App; // This export is now correctly at the top level
